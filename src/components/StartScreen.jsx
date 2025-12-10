@@ -1,34 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import "./StartScreen.css"; // animasyonları CSS ile yapacağız
 
 export default function StartScreen({ onStart }) {
+  const [countdown, setCountdown] = useState(null);
+
+  useEffect(() => {
+    let timer;
+    if (countdown !== null && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (countdown === 0) {
+      onStart();
+    }
+    return () => clearTimeout(timer);
+  }, [countdown, onStart]);
+
   return (
-    <div
-      style={{
-        textAlign: "center",
-        paddingTop: "100px",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <h1>🧠 Gerçeği Bul!</h1>
-      <p>
-        Üç görselden biri yapay zekâ tarafından üretilmiştir. 
-        Hangisinin gerçek olmadığını tahmin edebilir misin?
-      </p>
-      <button
-        onClick={onStart}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          borderRadius: "8px",
-          border: "none",
-          backgroundColor: "#007bff",
-          color: "white",
-          cursor: "pointer",
-        }}
-      >
-        Başla
-      </button>
+    <div className="start-container">
+      {countdown === null ? (
+        <>
+          <h1 className="glow-text">🧠 Gerçeği Bul!</h1>
+          <p className="start-description">
+            Üç görselden biri yapay zekâ tarafından üretilmiştir.
+            <br />
+            Hangisinin gerçek olmadığını tahmin edebilir misin?
+          </p>
+          <button
+            className="start-button"
+            onClick={() => setCountdown(3)}
+          >
+            Başla
+          </button>
+        </>
+      ) : (
+        <h1 className="countdown-number">{countdown}</h1>
+      )}
     </div>
   );
 }
