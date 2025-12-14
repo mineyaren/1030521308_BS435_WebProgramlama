@@ -2,20 +2,27 @@ import { useState } from "react";
 import StartScreen from "./components/StartScreen";
 import ModeSelect from "./components/ModeSelect";
 import GameScreen from "./components/GameScreen";
+import { themes } from "./themes";
 
 export default function App() {
-  // Ekran akışı: start → mode → game → result (result varsa)
   const [screen, setScreen] = useState("start");
   const [mode, setMode] = useState(null);
+  const currentTheme = themes[mode] || themes.secondChance;
+
 
   return (
-    <div>
-      {/* Başlangıç ekranı */}
+    <div
+     style={{
+     minHeight: "100vh",
+     backgroundColor: currentTheme.background,
+     color: currentTheme.text,
+     transition: "0.3s",
+  }}
+>
       {screen === "start" && (
         <StartScreen onStart={() => setScreen("mode")} />
       )}
 
-      {/* Mod seçme ekranı */}
       {screen === "mode" && (
         <ModeSelect
           setMode={setMode}
@@ -23,7 +30,6 @@ export default function App() {
         />
       )}
 
-      {/* Oyun ekranı */}
       {screen === "game" && (
         <GameScreen
           mode={mode}

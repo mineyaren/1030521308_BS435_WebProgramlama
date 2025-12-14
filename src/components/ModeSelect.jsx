@@ -1,37 +1,51 @@
-// src/components/ModeSelect.jsx
-import React from "react";
-
 export default function ModeSelect({ setMode, startGame }) {
+  const selectMode = (mode) => {
+    setMode(mode);
+    startGame();
+  };
+
   return (
-    <div style={{ textAlign: "center", padding: 30 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 20,
+      }}
+    >
       <h2>Oyun Modu Seç</h2>
 
       <button
-        onClick={() => {
-          setMode("hardcore");
-          startGame();
-        }}
-        style={buttonStyle}
+        onClick={() => selectMode("secondChance")}
+        style={btnBlue}
       >
-        Hardcore Mode (Tek Hak)
+        🎯 Kolay (2 Hak)
       </button>
 
       <button
-        onClick={() => {
-          setMode("secondChance");
-          startGame();
-        }}
-        style={buttonStyle}
+        onClick={() => selectMode("hardcore")}
+        style={btnRed}
       >
-        Second Chance (2 Hak + İpucu)
+        🔥 Zor (Tek Hak)
       </button>
     </div>
   );
 }
 
-const buttonStyle = {
-  padding: "12px 20px",
-  margin: "10px",
-  fontSize: "16px",
+const btnBlue = {
+  padding: "16px 28px",
+  fontSize: 18,
+  borderRadius: 14,
+  backgroundColor: "#3B82F6",
+  color: "#fff",
+  border: "none",
   cursor: "pointer",
 };
+
+const btnRed = {
+  ...btnBlue,
+  backgroundColor: "#EF4444",
+};
+

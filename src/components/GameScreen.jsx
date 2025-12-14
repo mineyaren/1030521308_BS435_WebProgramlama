@@ -1,127 +1,151 @@
-// src/components/GameScreen.jsx
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import images from "../data/images";
+import { themes } from "../themes";
 
 export default function GameScreen({ mode, restart }) {
+  const theme = themes[mode] || themes.secondChance;
+
   const [set, setSet] = useState([]);
   const [correctId, setCorrectId] = useState(null);
   const [message, setMessage] = useState("");
   const [hintVisible, setHintVisible] = useState(false);
-  const [attempt, setAttempt] = useState(1); // 1. hak / 2. hak
+  const [attempt, setAttempt] = useState(1);
 
   useEffect(() => {
     loadImages();
   }, []);
 
   const loadImages = () => {
-    let selected = images.sort(() => Math.random() - 0.5).slice(0, 3);
-    setSet(selected);
+    const aiImages = images.filter((i) => i.isAI);
+    const realImages = images.filter((i) => !i.isAI);
 
-    const aiImage = selected.find((img) => img.isAI);
-    setCorrectId(aiImage.id);
+    const ai =
+      aiImages[Math.floor(Math.random() * aiImages.length)];
+
+    const reals = [...realImages]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 2);
+
+    const finalSet = [...reals, ai].sort(
+      () => Math.random() - 0.5
+    );
+
+    setSet(finalSet);
+    setCorrectId(ai.id);
   };
 
   const handleSelect = (id) => {
-
-    // -------------------------
-    //  MODE 1: HARDCORE MODE
-    // -------------------------
     if (mode === "hardcore") {
+      setMessage(
+        id === correctId
+          ? "Tebrikler! Doğru 🎉"
+          : "Yanlış 😢 Tek hakkın vardı."
+      );
+      return;
+    }
+
+    if (attempt === 1) {
       if (id === correctId) {
-        setMessage("Tebrikler! Doğru tahmin 🎉");
+        setMessage("Bravo! İlk denemede 🎉");
       } else {
-        setMessage("Yanlış 😢 Hardcore modda tek hakkın vardı.");
+        setHintVisible(true);
+        setAttempt(2);
       }
       return;
     }
 
-    // -------------------------
-    //  MODE 2: SECOND CHANCE MODE
-    // -------------------------
-    if (mode === "secondChance") {
-
-      // İlk hak
-      if (attempt === 1) {
-        if (id === correctId) {
-          setMessage("Helal! İlk denemede bildin 🎉");
-        } else {
-          // yanlışsa ipucu ver → 2. hak açılır
-          setHintVisible(true);
-          setAttempt(2);
-        }
-        return;
-      }
-
-      // İkinci hak
-      if (attempt === 2) {
-        if (id === correctId) {
-          setMessage("Tebrikler 🎉 İkinci denemede doğruyu buldun!");
-        } else {
-          setMessage("Maalesef… Yanlış. 2 hakkını da kullandın 😢");
-        }
-        return;
-      }
-    }
+    setMessage(
+      id === correctId
+        ? "Tebrikler 🎉"
+        : "Yanlış 😢 2 hakkın da bitti."
+    );
   };
 
   return (
-    <div style={{ textAlign: "center", padding: 30 }}>
-      <h2>
-        {mode === "hardcore"
-          ? "Hardcore Mod"
-          : "Second Chance (2 Hak + İpucu)"}
-      </h2>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: theme.background,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: theme.card,
+          padding: 32,
+          borderRadius: 20,
+          width: "90%",
+          maxWidth: 900,
+          textAlign: "center",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+        }}
+      >
+        <h2 style={{ color: theme.primary, marginBottom: 20 }}>
+          {mode === "hardcore"
+            ? "🔥 Hardcore Mod"
+            : "🎯 Second Chance Mod"}
+        </h2>
 
-      {/* SONUÇ EKRANI */}
-      {message ? (
-        <div>
-          <h3>{message}</h3>
-          <button onClick={restart} style={btn}>
-            Yeniden Oyna
-          </button>
-        </div>
-      ) : (
-        <div>
-          {/* İPUCU (sadece second chance modunda ve yanlışta görünür) */}
-          {hintVisible && (
-            <p style={{ color: "orange", marginBottom: 20 }}>
-              🔍 İpucu: Arka plan detaylarına ve kenarlara dikkat et.
-            </p>
-          )}
+        {message ? (
+          <>
+            <h3 style={{ marginBottom: 20 }}>{message}</h3>
+            <button
+              onClick={restart}
+              style={button(theme)}
+            >
+              Yeniden Oyna
+            </button>
+          </>
+        ) : (
+          <>
+            {hintVisible && (
+              <p style={{ color: theme.primary }}>
+                🔍 İpucu: Kenarlara dikkat et
+              </p>
+            )}
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 20,
-              marginTop: 20,
-            }}
-          >
-            {set.map((img) => (
-              <img
-                key={img.id}
-                src={img.url}
-                alt=""
-                onClick={() => handleSelect(img.id)}
-                style={{
-                  width: 200,
-                  height: 200,
-                  cursor: "pointer",
-                  borderRadius: 8,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 20,
+                marginTop: 20,
+              }}
+            >
+              {set.map((img) => (
+                <img
+                  key={img.id}
+                  src={img.url}
+                  alt=""
+                  onClick={() => handleSelect(img.id)}
+                  style={{
+                    width: "100%",
+                    height: 220,
+                    objectFit: "cover",
+                    borderRadius: 14,
+                    cursor: "pointer",
+                    border: `4px solid ${theme.primary}`,
+                  }}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
-const btn = {
-  padding: "10px 16px",
-  fontSize: "16px",
+const button = (theme) => ({
+  padding: "14px 26px",
+  fontSize: 16,
+  borderRadius: 12,
+  backgroundColor: theme.primary,
+  color: "#fff",
+  border: "none",
   cursor: "pointer",
-};
+});
+
 
