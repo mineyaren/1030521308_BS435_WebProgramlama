@@ -43,16 +43,16 @@ export default function GameScreen({ mode, restart }) {
       );
       return;
     }
-
-    if (attempt === 1) {
-      if (id === correctId) {
-        setMessage("Bravo! İlk denemede 🎉");
-      } else {
-        setHintVisible(true);
-        setAttempt(2);
-      }
-      return;
-    }
+  if (attempt === 1) {
+   if (id === correctId) {
+     setMessage("Helal! İlk denemede 🎉");
+   }  else {
+     setHintVisible(true);
+     setAttempt(2);
+     loadImages(); // 👈 YENİ SET GELİR
+   }
+   return;
+ }
 
     setMessage(
       id === correctId
