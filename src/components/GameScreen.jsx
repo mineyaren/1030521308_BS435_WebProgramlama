@@ -35,32 +35,34 @@ export default function GameScreen({ mode, restart }) {
   };
 
   const handleSelect = (id) => {
-    if (mode === "hardcore") {
-      setMessage(
-        id === correctId
-          ? "Tebrikler! Doğru 🎉"
-          : "Yanlış 😢 Tek hakkın vardı."
-      );
-      return;
-    }
-  if (attempt === 1) {
-   if (id === correctId) {
-     setMessage("Helal! İlk denemede 🎉");
-   }  else {
-     setHintVisible(true);
-     setAttempt(2);
-     loadImages(); // 👈 YENİ SET GELİR
-   }
-   return;
- }
-
+  if (mode === "hardcore") {
     setMessage(
       id === correctId
-        ? "Tebrikler 🎉"
-        : "Yanlış 😢 2 hakkın da bitti."
+        ? "Tebrikler! Doğru 🎉"
+        : "Yanlış 😢 Tek hakkın vardı."
     );
-  };
+    return;
+  }
 
+  // EASY / SECOND CHANCE MOD
+  if (attempt === 1) {
+    if (id === correctId) {
+      setMessage("Tebrikler! İlk denemede 🎉");
+    } else {
+      setHintVisible(true);
+      setAttempt(2);
+      // ❌ loadImages() kaldırıldı
+    }
+    return;
+  }
+
+  // İkinci deneme
+  setMessage(
+    id === correctId
+      ? "Tebrikler 🎉"
+      : "Yanlış 😢 2 hakkın da bitti."
+  );
+};
   return (
     <div
       style={{
